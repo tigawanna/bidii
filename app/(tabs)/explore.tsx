@@ -1,110 +1,155 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { StyleSheet, ScrollView } from "react-native";
+import { Button, Card, Surface, Text, useTheme, Chip, Avatar } from "react-native-paper";
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+export default function ExploreScreen() {
+  const theme = useTheme();
 
-export default function TabTwoScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <ScrollView style={styles.container}>
+      <Surface style={styles.chipContainer} elevation={0}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipScroll}>
+          <Chip style={styles.chip} icon="food" onPress={() => {}}>
+            Food
+          </Chip>
+          <Chip style={styles.chip} icon="hiking" onPress={() => {}}>
+            Outdoor
+          </Chip>
+          <Chip style={styles.chip} icon="palette" onPress={() => {}}>
+            Arts
+          </Chip>
+          <Chip style={styles.chip} icon="music" onPress={() => {}}>
+            Music
+          </Chip>
+          <Chip style={styles.chip} icon="coffee" onPress={() => {}}>
+            Cafés
+          </Chip>
+        </ScrollView>
+      </Surface>
+
+      <Text variant="titleMedium" style={styles.sectionTitle}>
+        Popular Near You
+      </Text>
+
+      <Card style={styles.card} mode="elevated">
+        <Card.Cover source={{ uri: "https://picsum.photos/700/300?random=1" }} />
+        <Card.Content style={styles.cardContent}>
+          <MaterialCommunityIcons name="star" size={24} color={theme.colors.primary} />
+          <Text variant="titleMedium" style={styles.cardTitle}>
+            Mountain Trail Hike
+          </Text>
+          <Text variant="bodyMedium">Experience breathtaking views just 20 minutes away</Text>
+        </Card.Content>
+        <Card.Actions>
+          <Button mode="text">View Details</Button>
+          <Button mode="contained-tonal" icon="bookmark-outline">
+            Save
+          </Button>
+        </Card.Actions>
+      </Card>
+
+      <Card style={styles.card} mode="elevated">
+        <Card.Cover source={{ uri: "https://picsum.photos/700/300?random=2" }} />
+        <Card.Content style={styles.cardContent}>
+          <MaterialCommunityIcons name="food" size={24} color={theme.colors.primary} />
+          <Text variant="titleMedium" style={styles.cardTitle}>
+            Riverside Café
+          </Text>
+          <Text variant="bodyMedium">Local favorite with seasonal menu and waterfront views</Text>
+        </Card.Content>
+        <Card.Actions>
+          <Button mode="text">View Details</Button>
+          <Button mode="contained-tonal" icon="bookmark-outline">
+            Save
+          </Button>
+        </Card.Actions>
+      </Card>
+
+      <Text variant="titleMedium" style={styles.sectionTitle}>
+        Events This Week
+      </Text>
+
+      <Card style={styles.card} mode="elevated">
+        <Card.Content style={styles.cardContent}>
+          <Surface style={styles.eventHeader} elevation={0}>
+            <Avatar.Icon size={48} icon="music" />
+            <Surface style={styles.eventInfo} elevation={0}>
+              <Text variant="titleMedium" style={styles.cardTitle}>
+                Local Jazz Festival
+              </Text>
+              <Text variant="bodySmall" style={styles.dateText}>
+                Saturday, 7:00 PM
+              </Text>
+            </Surface>
+          </Surface>
+          <Text variant="bodyMedium">
+            Enjoy performances from the city&apos;s best jazz musicians
+          </Text>
+        </Card.Content>
+        <Card.Actions>
+          <Button mode="text">View Details</Button>
+          <Button mode="contained" icon="calendar">
+            RSVP
+          </Button>
+        </Card.Actions>
+      </Card>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    paddingHorizontal: 24,
   },
-  titleContainer: {
-    flexDirection: 'row',
+  header: {
+    marginVertical: 16,
+  },
+  title: {
+    fontWeight: "bold",
+  },
+  subtitle: {
+    marginTop: 4,
+    opacity: 0.7,
+  },
+  chipContainer: {
+    marginVertical: 16,
+  },
+  chipScroll: {
+    paddingRight: 16,
     gap: 8,
+  },
+  chip: {
+    marginRight: 8,
+  },
+  sectionTitle: {
+    fontWeight: "bold",
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  card: {
+    marginVertical: 8,
+    borderRadius: 12,
+  },
+  cardContent: {
+    gap: 8,
+    paddingVertical: 16,
+  },
+  cardTitle: {
+    fontWeight: "bold",
+  },
+  eventHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  eventInfo: {
+    flex: 1,
+  },
+  dateText: {
+    opacity: 0.7,
   },
 });

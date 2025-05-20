@@ -1,69 +1,56 @@
 import { useColorScheme } from "react-native";
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { observable } from "@legendapp/state";
+import { use$ } from "@legendapp/state/react";
+import { syncObservable } from "@legendapp/state/sync";
+import { ObservablePersistLocalStorage } from "@legendapp/state/persist-plugins/local-storage";
 
-type Theme = "dark" | "light" | null;
-
-interface SettingsState {
-  theme: Theme;
+type SettingsStoreType = {
+  theme: "dark" | "light" | null;
   localBackupPath: string | null;
   dynamicColors: boolean;
-  lastBackup: Date | null;
-  setTheme: (theme: Theme) => void;
-  toggleTheme: () => void;
   toggleDynamicColors: () => void;
-  setLocalBackupPath: (path: string | null) => void;
-  setLastBackup: (date: Date | null) => void;
+  toggleTheme: () => void;
+  lastBackup: Date | null;
+};
+
+// Observables can be primitives or deep objects
+export const settings$ = observable<SettingsStoreType>({
+  theme: null,
+  localBackupPath: null,
+  dynamicColors: true,
+  toggleDynamicColors: () => {
+    settings$.dynamicColors.set(!settings$.dynamicColors.get());
+  },
+  toggleTheme: () => {
+    settings$.theme.set(settings$.theme.get() === "light" ? "dark" : "light");
+  },
+  lastBackup: null,
+});
+
+syncObservable(settings$, {
+  persist: {
+    name: "app-settings",
+    plugin: ObservablePersistLocalStorage,
+  },
+});
+
+export function useSettingsStore() {
+  const settings = use$(() => settings$.get());
+  const updateSettings = (value: Partial<SettingsStoreType>) => {
+    settings$.set({ ...settings, ...value });
+  };
+  return { settings, updateSettings };
 }
-
-export const useSettingsStore = create<SettingsState>()(
-  persist(
-    (set) => ({
-      theme: null,
-      localBackupPath: null,
-      dynamicColors: true,
-      lastBackup: null,
-
-      setTheme: (theme) => set({ theme }),
-
-      toggleTheme: () =>
-        set((state) => ({
-          theme: state.theme === "light" ? "dark" : "light",
-        })),
-
-      toggleDynamicColors: () =>
-        set((state) => ({
-          dynamicColors: !state.dynamicColors,
-        })),
-
-      setLocalBackupPath: (localBackupPath) => set({ localBackupPath }),
-
-      setLastBackup: (lastBackup) => set({ lastBackup }),
-    }),
-    {
-      name: "app-settings",
-      storage: createJSONStorage(() => AsyncStorage),
-    }
-  )
-);
 
 export function useThemeStore() {
   const colorScheme = useColorScheme();
-  const [theme, toggleTheme, setTheme] = useSettingsStore((state) => [
-    state.theme,
-    state.toggleTheme,
-    state.setTheme,
-  ]);
-
-  // Use the system theme if no theme is set
-  const actualTheme = theme ?? colorScheme ?? "light";
-  const isDarkMode = actualTheme === "dark";
-
-  return {
-    theme: actualTheme as "dark" | "light",
-    toggleTheme,
-    setTheme,
-    isDarkMode,
+  const theme = use$(() => settings$.theme.get()) ?? colorScheme;
+  const setTheme = (value: SettingsStoreType["theme"]) => {
+    settings$.theme.set(value);
   };
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
+  const isDarkMode = theme === "dark";
+  return { theme, toggleTheme, isDarkMode };
 }

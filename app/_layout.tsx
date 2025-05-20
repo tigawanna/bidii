@@ -25,8 +25,9 @@ function onAppStateChange(status: AppStateStatus) {
 
 
 export default function RootLayout() {
-  const dynamicColors = useSettingsStore((state)=>state.dynamicColors);
-  const { colorScheme, paperTheme } = useThemeSetup(dynamicColors);
+  const { settings } = useSettingsStore();
+  const { colorScheme, paperTheme } = useThemeSetup(settings.dynamicColors);
+
   useOnlineManager();
   useAppState(onAppStateChange);
 
