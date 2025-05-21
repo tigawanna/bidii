@@ -12,9 +12,11 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        //        headerShown: false, // Hide headers for all tab screens
+        //  headerShown: false, // Hide headers for all tab screens
         headerStyle: {
           backgroundColor: colors.surface,
+          borderBottomWidth: 0,
+          // backgroundColor: colors.surface,
         },
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,

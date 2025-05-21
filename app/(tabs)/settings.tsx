@@ -1,5 +1,5 @@
-
-import { useThemeStore, useSettingsStore } from "@/stores/use-app-settings";
+import { useSettingsStore, useThemeStore } from "@/stores/use-app-settings";
+import { useRouter } from "expo-router";
 import { ScrollView, StyleSheet } from "react-native";
 import { Divider, List, Switch } from "react-native-paper";
 
@@ -8,6 +8,7 @@ export default function Settings() {
   const {
     settings: { dynamicColors, toggleDynamicColors },
   } = useSettingsStore();
+  const router = useRouter();
 
   return (
     <ScrollView style={[styles.container]}>
@@ -23,6 +24,17 @@ export default function Settings() {
           description="Use Material You color palette"
           left={(props) => <List.Icon {...props} icon="palette" />}
           right={() => <Switch value={dynamicColors} onValueChange={toggleDynamicColors} />}
+        />
+        <Divider />
+      </List.Section>
+
+      <List.Section>
+        <List.Subheader style={[styles.listSubHeader]}>API Integrations</List.Subheader>
+        <List.Item
+          title="API Keys"
+          description="Configure GitHub and Wakatime API keys"
+          left={(props) => <List.Icon {...props} icon="key" />}
+          onPress={() => router.push("/api-keys")}
         />
         <Divider />
       </List.Section>

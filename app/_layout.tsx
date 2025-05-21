@@ -1,18 +1,18 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import "react-native-reanimated";
 
-import { useSettingsStore } from '@/stores/use-app-settings';
-import { useThemeSetup } from '@/hooks/useThemeSetup';
-import React from 'react';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { PaperProvider } from 'react-native-paper';
+import { useSettingsStore } from "@/stores/use-app-settings";
+import { useThemeSetup } from "@/hooks/useThemeSetup";
+import React from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { PaperProvider } from "react-native-paper";
 import { focusManager, QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AppStateStatus, Platform } from 'react-native';
-import { useOnlineManager, useAppState } from '@/lib/tanstack/hooks';
-
+import { AppStateStatus, Platform } from "react-native";
+import { useOnlineManager, useAppState } from "@/lib/tanstack/hooks";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const queryClient = new QueryClient();
 function onAppStateChange(status: AppStateStatus) {
@@ -22,8 +22,6 @@ function onAppStateChange(status: AppStateStatus) {
   }
 }
 
-
-
 export default function RootLayout() {
   const { settings } = useSettingsStore();
   const { colorScheme, paperTheme } = useThemeSetup(settings.dynamicColors);
@@ -32,7 +30,7 @@ export default function RootLayout() {
   useAppState(onAppStateChange);
 
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
   if (!loaded) {
