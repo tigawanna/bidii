@@ -11,7 +11,6 @@ import {
   useTheme,
 } from "react-native-paper";
 import { useApiKeysStore } from "@/stores/use-app-settings";
-import { ExternalLink } from "@/components/ExternalLink";
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { Link } from "expo-router";
 
