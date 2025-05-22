@@ -26,7 +26,7 @@ function onAppStateChange(status: AppStateStatus) {
 export default function RootLayout() {
   const { settings } = useSettingsStore();
   const { colorScheme, paperTheme } = useThemeSetup(settings.dynamicColors);
-
+  const wakatimeToken = process.env.EXPO_PUBLIC_WAKATIME_KEY;
   useOnlineManager();
   useAppState(onAppStateChange);
 
@@ -35,8 +35,9 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
+    
     getWakatimeCurrrentUser({
-      token: "YOUR_WAKATIME_KEY",
+      token: wakatimeToken  as string,
     }).then((res) => {
       console.log("Wakatime user data:", res.data?.bio);
     }

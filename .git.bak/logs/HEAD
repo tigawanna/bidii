@@ -1,0 +1,6 @@
+0000000000000000000000000000000000000000 8575f6ea217dae0a2983505236d72363f6aa3a70 tigawanna <denniskinuthiawaweru@gmail.com> 1747759668 +0300	commit (initial): Initial commit
+8575f6ea217dae0a2983505236d72363f6aa3a70 492fa4f47042a40611398ea754a4250bf628bb32 tigawanna <denniskinuthiawaweru@gmail.com> 1747761652 +0300	commit: feat: add theme management and Tanstack Query integration
+492fa4f47042a40611398ea754a4250bf628bb32 df35b9f6340141f451d1496fd4f3914a53c1307c tigawanna <denniskinuthiawaweru@gmail.com> 1747765128 +0300	commit: fix: theme ad settings setup
+df35b9f6340141f451d1496fd4f3914a53c1307c d88a89dd2df022d711b983079cbbf2054827f5f2 tigawanna <denniskinuthiawaweru@gmail.com> 1747850802 +0300	commit: feat: implement API keys management and settings screen
+d88a89dd2df022d711b983079cbbf2054827f5f2 1a051643a5587778ecc6000b6247b5bd2fcae76f tigawanna <denniskinuthiawaweru@gmail.com> 1747934480 +0300	commit: refactor: remove unused import for ExternalLink in ApiKeysSeettings
+1a051643a5587778ecc6000b6247b5bd2fcae76f 9939a43247d5242c8ed4327e9ea1d1ec87d7f3c3 tigawanna <denniskinuthiawaweru@gmail.com> 1747936199 +0300	commit: feat: add Wakatime API integration and user data fetching
