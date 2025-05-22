@@ -1,9 +1,8 @@
 import { StyleSheet } from 'react-native'
 import { Text,Surface } from 'react-native-paper';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
  
 export function PageHedaerPadding(){
-    const { top } = useSafeAreaInsets();
 return (
 <Surface style={{ ...styles.container,  }}>
     <Text variant='titleLarge'>PageHedaerPadding</Text>

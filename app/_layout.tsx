@@ -6,13 +6,14 @@ import "react-native-reanimated";
 
 import { useSettingsStore } from "@/stores/use-app-settings";
 import { useThemeSetup } from "@/hooks/useThemeSetup";
-import React from "react";
+import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
 import { focusManager, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppStateStatus, Platform } from "react-native";
 import { useOnlineManager, useAppState } from "@/lib/tanstack/hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getWakatimeCurrrentUser } from "@/utils/api/wakatime";
 
 const queryClient = new QueryClient();
 function onAppStateChange(status: AppStateStatus) {
@@ -32,6 +33,18 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
+
+  useEffect(() => {
+    getWakatimeCurrrentUser({
+      token: "YOUR_WAKATIME_KEY",
+    }).then((res) => {
+      console.log("Wakatime user data:", res.data?.bio);
+    }
+    ).catch((error) => {
+      console.error("Error fetching Wakatime user:", error);
+    }
+    );
+  },[])
 
   if (!loaded) {
     // Async font loading only occurs in development.
