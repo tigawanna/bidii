@@ -38,11 +38,7 @@ export function ApiKeysSeettings() {
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 20}
-    >
+
       <Surface style={styles.container}>
         <ScrollView 
           style={styles.scrollView} 
@@ -100,7 +96,11 @@ export function ApiKeysSeettings() {
           </View>
 
           <Divider style={styles.divider} />
-
+          <KeyboardAvoidingView 
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 20}
+    >
           <View style={styles.section}>
             <Text variant="titleMedium" style={styles.sectionTitle}>
               Wakatime
@@ -144,6 +144,7 @@ export function ApiKeysSeettings() {
               Save Wakatime API Key
             </Button>
           </View>
+    </KeyboardAvoidingView>
           
           {/* Add extra padding at bottom to ensure content remains visible when keyboard is open */}
           <View style={{ height: 100 }} />
@@ -160,7 +161,6 @@ export function ApiKeysSeettings() {
           {snackbarMessage}
         </Snackbar>
       </Surface>
-    </KeyboardAvoidingView>
   );
 }
 
