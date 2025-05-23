@@ -14,6 +14,7 @@ import { AppStateStatus, Platform } from "react-native";
 import { useOnlineManager, useAppState } from "@/lib/tanstack/hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getWakatimeCurrrentUser } from "@/utils/api/wakatime";
+import { GlobalSnackbar } from "@/components/shared/snackbar/GlobalSnackbar";
 
 const queryClient = new QueryClient();
 function onAppStateChange(status: AppStateStatus) {
@@ -63,6 +64,7 @@ export default function RootLayout() {
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen name="+not-found" />
               </Stack>
+              <GlobalSnackbar/>
             </ThemeProvider>
           </PaperProvider>
         </GestureHandlerRootView>
