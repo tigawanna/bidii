@@ -41,7 +41,12 @@ export class GitHubSDK {
   // Static method to verify a token without needing an instance
   static async checkIfTokenIsValid({ token }: { token: string }) {
     const url = new URL("https://api.github.com/user");
-
+    if(!token || token.trim() === "") {
+      return {
+        isValid: false,
+        error: "Token is required",
+      };
+    }
     try {
       const response = await fetch(url.toString(), {
         headers: {

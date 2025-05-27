@@ -6,14 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
-import {
-  Button,
-  HelperText,
-  Surface,
-  Text,
-  TextInput,
-  useTheme,
-} from "react-native-paper";
+import { Button, HelperText, Surface, Text, TextInput, useTheme } from "react-native-paper";
 
 export function GithubApiKey() {
   const { colors } = useTheme();
@@ -22,7 +15,7 @@ export function GithubApiKey() {
   const [githubKey, setGithubKey] = useState(githubApiKey || "");
   const [githubSecure, setGithubSecure] = useState(true);
 
-  const { mutate,isPending } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: async ({ token }: { token: string }) => {
       // Your mutation logic here
       return GitHubSDK.checkIfTokenIsValid({
@@ -30,7 +23,23 @@ export function GithubApiKey() {
       });
     },
 
-    onSuccess: (data,{token}) => {
+    onSuccess: (data, { token }) => {
+      if (!data.isValid) {
+        showSnackbar(data?.error ?? "Something went wrong", {
+          duration: 5000, // 5 seconds
+          action: {
+            label: "Retry",
+            onPress: () => {
+              // Logic to retry
+              mutate({ token });
+            },
+          },
+          onDismiss: () => {
+            console.log("Snackbar dismissed");
+          },
+        });
+        return;
+      }
       setGithubApiKey(token);
       showSnackbar("GitHub API key saved", {
         duration: 5000, // 5 seconds
@@ -105,11 +114,8 @@ export function GithubApiKey() {
               }}>
               GitHub: Go to Settings →
             </Text>
-
             <Text variant="bodySmall">Developer Settings →</Text>
-
             <Text variant="bodySmall">Personal access tokens</Text>
-
             <EvilIcons name="external-link" size={20} color={colors.primary} />
           </Link>
           <TextInput
@@ -131,6 +137,7 @@ export function GithubApiKey() {
           />
           <Button
             mode="contained"
+            disabled={isPending || githubKey?.trim()=== ""}
             onPress={handleSaveGithub}
             style={{
               marginVertical: 8,

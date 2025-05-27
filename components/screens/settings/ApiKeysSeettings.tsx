@@ -1,5 +1,5 @@
 import { useSnackbar } from "@/components/shared/snackbar/store";
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { Divider, Surface, Text } from "react-native-paper";
 import { GithubApiKey } from "./GithubApiKey";
 import { WakatimeApiKey } from "./WakatimeApiKey";

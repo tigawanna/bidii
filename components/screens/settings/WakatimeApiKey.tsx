@@ -5,7 +5,7 @@ import { EvilIcons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
 import { Button, HelperText, Surface, Text, TextInput, useTheme } from "react-native-paper";
 
 export function WakatimeApiKey() {
@@ -25,6 +25,14 @@ export function WakatimeApiKey() {
 
     onSuccess: (data, { token }) => {
       setWakatimeApiKey(token);
+      if(!data.isValid){
+        showSnackbar(data?.error??"XSomething went wrong", {
+          onDismiss: () => {
+            console.log("Snackbar dismissed");
+          },
+        });
+        return;
+      }
       showSnackbar("Wakatime API key saved", {
         duration: 5000, // 5 seconds
         action: {
@@ -111,6 +119,7 @@ export function WakatimeApiKey() {
           <Button
             mode="contained"
             onPress={handleSaveWakatime}
+            disabled={isPending || wakatimeKey?.trim() === ""}
             style={{
               marginVertical: 8,
             }}

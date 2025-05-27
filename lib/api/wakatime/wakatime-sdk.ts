@@ -28,6 +28,12 @@ export class WakatimeSDK {
   // Static method that doesn't need an instance
   static async checkIfTokenIsValid({ token }: { token: string }) {
     const baseUrl = "https://wakatime.com";
+    if (!token || token.trim() === "") {
+      return {
+        isValid: false,
+        error: "Token is required",
+      };
+    }
     const url = new URL(`${baseUrl}/api/v1/users/current`);
     url.searchParams.append("api_key", token);
     

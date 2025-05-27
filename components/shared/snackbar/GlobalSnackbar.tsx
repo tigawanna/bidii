@@ -8,6 +8,7 @@ return (
     visible={visible}
     onDismiss={hideSnackbar}
     duration={duration}
+ 
     action={action}>
     {message}
   </Snackbar>
