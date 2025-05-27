@@ -1,7 +1,7 @@
-import { useSnackbar } from "@/components/shared/snackbar/store";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Divider, Surface, Text } from "react-native-paper";
 import { GithubApiKey } from "./GithubApiKey";
+import { SpotifyAccessToken } from "./SpotifyAccessToken";
 import { WakatimeApiKey } from "./WakatimeApiKey";
 
 export function ApiKeysSeettings() {
@@ -23,6 +23,11 @@ export function ApiKeysSeettings() {
 
         {/* Wakatime API Key Component */}
         <WakatimeApiKey />
+
+        <Divider style={styles.divider} />
+
+        {/* Spotify Access Token Component */}
+        <SpotifyAccessToken />
 
         {/* Add extra padding at bottom to ensure content remains visible when keyboard is open */}
         <View style={{ height: 100 }} />

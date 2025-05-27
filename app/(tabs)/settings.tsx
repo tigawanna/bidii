@@ -32,7 +32,7 @@ export default function Settings() {
         <List.Subheader style={[styles.listSubHeader]}>API Integrations</List.Subheader>
         <List.Item
           title="API Keys"
-          description="Configure GitHub and Wakatime API keys"
+          description="Configure GitHub, Wakatime, and Spotify API keys"
           left={(props) => <List.Icon {...props} icon="key" />}
           onPress={() => router.push("/api-keys")}
         />

@@ -1,8 +1,8 @@
-import { useColorScheme } from "react-native";
 import { observable } from "@legendapp/state";
+import { ObservablePersistLocalStorage } from "@legendapp/state/persist-plugins/local-storage";
 import { use$ } from "@legendapp/state/react";
 import { syncObservable } from "@legendapp/state/sync";
-import { ObservablePersistLocalStorage } from "@legendapp/state/persist-plugins/local-storage";
+import { useColorScheme } from "react-native";
 
 type SettingsStoreType = {
   theme: "dark" | "light" | null;
@@ -10,6 +10,7 @@ type SettingsStoreType = {
   dynamicColors: boolean;
   githubApiKey: string | null;
   wakatimeApiKey: string | null;
+  spotifyAccessToken: string | null;
   toggleDynamicColors: () => void;
   toggleTheme: () => void;
   lastBackup: Date | null;
@@ -22,6 +23,7 @@ export const settings$ = observable<SettingsStoreType>({
   dynamicColors: true,
   githubApiKey: null,
   wakatimeApiKey: null,
+  spotifyAccessToken: null,
   toggleDynamicColors: () => {
     settings$.dynamicColors.set(!settings$.dynamicColors.get());
   },
@@ -62,6 +64,7 @@ export function useThemeStore() {
 export function useApiKeysStore() {
   const githubApiKey = use$(() => settings$.githubApiKey.get());
   const wakatimeApiKey = use$(() => settings$.wakatimeApiKey.get());
+  const spotifyAccessToken = use$(() => settings$.spotifyAccessToken.get());
 
   const setGithubApiKey = (value: string | null) => {
     settings$.githubApiKey.set(value);
@@ -71,10 +74,16 @@ export function useApiKeysStore() {
     settings$.wakatimeApiKey.set(value);
   };
 
+  const setSpotifyAccessToken = (value: string | null) => {
+    settings$.spotifyAccessToken.set(value);
+  };
+
   return {
     githubApiKey,
     wakatimeApiKey,
+    spotifyAccessToken,
     setGithubApiKey,
     setWakatimeApiKey,
+    setSpotifyAccessToken,
   };
 }

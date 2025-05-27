@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
-import { Button, HelperText, Surface, Text, TextInput, useTheme } from "react-native-paper";
+import { Button, Surface, Text, TextInput, useTheme } from "react-native-paper";
 
 export function GithubApiKey() {
   const { colors } = useTheme();
@@ -90,7 +90,17 @@ export function GithubApiKey() {
             }}>
             GitHub Personal Access Token
           </Text>
-          <HelperText type="info">Used to fetch your repositories and activity data</HelperText>
+          <Text 
+            variant="bodySmall" 
+            style={{
+              fontSize: 12,
+              paddingVertical: 4,
+              paddingHorizontal: 12,
+              opacity: 0.7,
+              color: colors.onSurfaceVariant
+            }}>
+            Used to fetch your repositories and activity data
+          </Text>
           <Link
             target="_blank"
             href={"https://github.com/settings/tokens"}

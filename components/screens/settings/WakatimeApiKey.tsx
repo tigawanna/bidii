@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
-import { Button, HelperText, Surface, Text, TextInput, useTheme } from "react-native-paper";
+import { Button, Surface, Text, TextInput, useTheme } from "react-native-paper";
 
 export function WakatimeApiKey() {
   const { colors } = useTheme();
@@ -82,7 +82,17 @@ export function WakatimeApiKey() {
             }}>
             Wakatime
           </Text>
-          <HelperText type="info">Used to track your coding activity and statistics</HelperText>
+          <Text 
+            variant="bodySmall" 
+            style={{
+              fontSize: 12,
+              paddingVertical: 4,
+              paddingHorizontal: 12,
+              opacity: 0.7,
+              color: colors.onSurfaceVariant
+            }}>
+            Used to track your coding activity and statistics
+          </Text>
           <Link
             target="_blank"
             href={"https://wakatime.com/settings/api-key"}

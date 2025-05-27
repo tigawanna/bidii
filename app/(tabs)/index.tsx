@@ -1,14 +1,12 @@
-// import { DailyDuration } from "@/components/wakatime/DailyDuration";
+
+import { Overview } from "@/components/screens/home/Overview";
 import { StyleSheet } from "react-native";
-import { Surface,Text } from "react-native-paper";
+import { Surface } from "react-native-paper";
 
 export default function HomeScreen() {
   return (
     <Surface style={styles.container}>
-      {/* <DailyDuration /> */}
-      <Text variant="titleLarge" style={styles.header}>
-        Welcome to the App!
-      </Text>
+      <Overview />
     </Surface>
   );
 }
