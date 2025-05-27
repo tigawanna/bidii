@@ -5,32 +5,29 @@ import { GithubApiKey } from "./GithubApiKey";
 import { WakatimeApiKey } from "./WakatimeApiKey";
 
 export function ApiKeysSeettings() {
-
-
   return (
+    <Surface style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled">
+        <Text variant="bodyMedium" style={styles.description}>
+          Add your API keys to connect to external services. These keys are stored securely on your
+          device.
+        </Text>
 
-      <Surface style={styles.container}>
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled">
-          <Text variant="bodyMedium" style={styles.description}>
-            Add your API keys to connect to external services. These keys are stored securely on your
-            device.
-          </Text>
+        {/* GitHub API Key Component */}
+        <GithubApiKey />
 
-          {/* GitHub API Key Component */}
-          <GithubApiKey />
+        <Divider style={styles.divider} />
 
-          <Divider style={styles.divider} />
+        {/* Wakatime API Key Component */}
+        <WakatimeApiKey />
 
-          {/* Wakatime API Key Component */}
-          <WakatimeApiKey />
-
-          {/* Add extra padding at bottom to ensure content remains visible when keyboard is open */}
-          <View style={{ height: 100 }} />
-        </ScrollView>
-      </Surface>
+        {/* Add extra padding at bottom to ensure content remains visible when keyboard is open */}
+        <View style={{ height: 100 }} />
+      </ScrollView>
+    </Surface>
   );
 }
 
