@@ -65,6 +65,10 @@ export class WakatimeSDK {
   async getUserStats(params: { start?: string; end?: string; project?: string }) {
     return this.fetchData("/api/v1/users/current/stats", params);
   }
+
+  async getUserDurations(params: { date: string }) {
+    return this.fetchData("/api/v1/users/current/durations", params);
+  }
   async getUserHeartbeats(params: { start?: string; end?: string }) {
     return this.fetchData("/api/v1/users/current/heartbeats", params);
   }

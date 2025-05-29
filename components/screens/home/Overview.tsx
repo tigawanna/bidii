@@ -2,14 +2,15 @@ import { GitHubSDK } from '@/lib/api/github/github-sdk';
 import { WakatimeSDK } from '@/lib/api/wakatime/wakatime-sdk';
 import { useApiKeysStore } from '@/stores/use-app-settings';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Card, Chip, Surface, Text, useTheme } from 'react-native-paper';
+import { Button, Card, Chip, SegmentedButtons, Surface, Text, useTheme } from 'react-native-paper';
 
 type WakatimeStats = {
   todayHours: string;
-  totalHours: string;
+  totalDurations: number;
   currentProject: string;
   topLanguage: string;
 };
@@ -28,38 +29,66 @@ export function Overview() {
   const { colors } = useTheme();
   const router = useRouter();
   const { wakatimeApiKey, githubApiKey, spotifyAccessToken } = useApiKeysStore();
-  
-  const [wakatimeStats, setWakatimeStats] = useState<WakatimeStats | null>(null);
-  const [githubActivity, setGithubActivity] = useState<GitHubActivity | null>(null);
-  const [spotifyTracks, setSpotifyTracks] = useState<SpotifyTracks | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
-  const fetchWakatimeStats = useCallback(async () => {
-    if (!wakatimeApiKey) return;
-    
-    try {
-      const sdk = new WakatimeSDK(wakatimeApiKey);
-      const today = new Date().toISOString().split('T')[0];
-      const stats = await sdk.getUserStats({ start: today, end: today });
-      
-      if (stats.data) {
-        setWakatimeStats({
-          todayHours: stats.data.human_readable_total || '0 hrs 0 mins',
-          totalHours: stats.data.human_readable_total_including_other_language || '0 hrs',
-          currentProject: stats.data.projects?.[0]?.name || 'No project',
-          topLanguage: stats.data.languages?.[0]?.name || 'No language'
-        });
-      }
-    } catch (error) {
-      console.error('Failed to fetch Wakatime stats:', error);
+  // Generate last 5 days for date selection
+  const getLastFiveDays = () => {
+    const days = [];
+    for (let i = 0; i < 5; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      days.push({
+        value: date.toISOString().split('T')[0],
+        label: i === 0 ? 'Today' : i === 1 ? 'Yesterday' : date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      });
     }
-  }, [wakatimeApiKey]);
+    return days;
+  };
 
-  const fetchGitHubActivity = useCallback(async () => {
-    if (!githubApiKey) return;
-    
-    try {
+  const lastFiveDays = getLastFiveDays();
+
+  // Wakatime query using the correct durations endpoint
+  const {
+    data: wakatimeData,
+    isLoading: wakatimeLoading,
+    refetch: refetchWakatime,
+  } = useQuery({
+    queryKey: ['wakatime-durations', selectedDate, wakatimeApiKey],
+    queryFn: async () => {
+      if (!wakatimeApiKey) return null;
+      const sdk = new WakatimeSDK(wakatimeApiKey);
+      const result = await sdk.getUserDurations({ date: selectedDate });
+      
+      if (result.data) {
+        // Calculate total duration from durations array
+        const totalSeconds = result.data.reduce((total: number, duration: any) => {
+          return total + (duration.duration || 0);
+        }, 0);
+        
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        
+        return {
+          todayHours: `${hours}h ${minutes}m`,
+          totalDurations: result.data.length,
+          currentProject: result.data[0]?.project || 'No project',
+          topLanguage: result.data[0]?.language || 'No language'
+        };
+      }
+      return null;
+    },
+    enabled: !!wakatimeApiKey,
+  });
+
+  // GitHub query
+  const {
+    data: githubData,
+    isLoading: githubLoading,
+    refetch: refetchGithub,
+  } = useQuery({
+    queryKey: ['github-activity', githubApiKey],
+    queryFn: async () => {
+      if (!githubApiKey) return null;
       const sdk = new GitHubSDK(githubApiKey);
       const [reposResponse, userResponse] = await Promise.all([
         sdk.getRepositories({ sort: 'updated', per_page: 3 }),
@@ -67,7 +96,7 @@ export function Overview() {
       ]);
       
       if (reposResponse.data && userResponse.data) {
-        setGithubActivity({
+        return {
           recentRepos: reposResponse.data.map((repo: any) => ({
             name: repo.name,
             updated_at: repo.updated_at,
@@ -75,43 +104,43 @@ export function Overview() {
           })),
           totalRepos: userResponse.data.public_repos,
           totalStars: reposResponse.data.reduce((sum: number, repo: any) => sum + repo.stargazers_count, 0)
-        });
+        };
       }
-    } catch (error) {
-      console.error('Failed to fetch GitHub activity:', error);
-    }
-  }, [githubApiKey]);
+      return null;
+    },
+    enabled: !!githubApiKey,
+  });
 
-  const fetchSpotifyTracks = async () => {
-    // Mock data for now - you'll need to implement Spotify API
-    setSpotifyTracks({
-      tracks: [
-        { name: 'Song Title 1', artist: 'Artist 1', album: 'Album 1' },
-        { name: 'Song Title 2', artist: 'Artist 2', album: 'Album 2' },
-        { name: 'Song Title 3', artist: 'Artist 3', album: 'Album 3' }
-      ]
-    });
-  };
+  // Spotify query (mock data for now)
+  const {
+    data: spotifyData,
+    isLoading: spotifyLoading,
+    refetch: refetchSpotify,
+  } = useQuery({
+    queryKey: ['spotify-tracks', spotifyAccessToken],
+    queryFn: async () => {
+      if (!spotifyAccessToken) return null;
+      // Mock data - replace with actual Spotify API when implemented
+      return {
+        tracks: [
+          { name: 'Song Title 1', artist: 'Artist 1', album: 'Album 1' },
+          { name: 'Song Title 2', artist: 'Artist 2', album: 'Album 2' },
+          { name: 'Song Title 3', artist: 'Artist 3', album: 'Album 3' }
+        ]
+      };
+    },
+    enabled: !!spotifyAccessToken,
+  });
 
-  const fetchAllData = useCallback(async () => {
-    setLoading(true);
-    await Promise.all([
-      fetchWakatimeStats(),
-      fetchGitHubActivity(),
-      fetchSpotifyTracks()
-    ]);
-    setLoading(false);
-  }, [fetchWakatimeStats, fetchGitHubActivity]);
+  const isLoading = wakatimeLoading || githubLoading || spotifyLoading;
 
   const onRefresh = async () => {
-    setRefreshing(true);
-    await fetchAllData();
-    setRefreshing(false);
+    await Promise.all([
+      refetchWakatime(),
+      refetchGithub(),
+      refetchSpotify(),
+    ]);
   };
-
-  useEffect(() => {
-    fetchAllData();
-  }, [fetchAllData]);
 
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -129,16 +158,9 @@ export function Overview() {
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
         }
       >
-        <Text variant="headlineMedium" style={styles.title}>
-          Overview
-        </Text>
-        <Text variant="bodyMedium" style={styles.subtitle}>
-          Your coding activity at a glance
-        </Text>
-
         {/* Wakatime Section */}
         <Card style={styles.card}>
           <Card.Content>
@@ -150,26 +172,37 @@ export function Overview() {
             </View>
             
             {wakatimeApiKey ? (
-              wakatimeStats ? (
-                <View style={styles.statsContainer}>
-                  <View style={styles.statRow}>
-                    <Text variant="bodyLarge" style={styles.statLabel}>Today:</Text>
-                    <Text variant="bodyLarge" style={styles.statValue}>{wakatimeStats.todayHours}</Text>
-                  </View>
-                  <View style={styles.statRow}>
-                    <Text variant="bodyMedium" style={styles.statLabel}>Current Project:</Text>
-                    <Chip mode="outlined" compact>{wakatimeStats.currentProject}</Chip>
-                  </View>
-                  <View style={styles.statRow}>
-                    <Text variant="bodyMedium" style={styles.statLabel}>Top Language:</Text>
-                    <Chip mode="outlined" compact>{wakatimeStats.topLanguage}</Chip>
-                  </View>
+              <>
+                {/* Date Selector */}
+                <View style={styles.dateSelector}>
+                  <SegmentedButtons
+                    value={selectedDate}
+                    onValueChange={setSelectedDate}
+                    buttons={lastFiveDays.map(day => ({
+                      value: day.value,
+                      label: day.label,
+                    }))}
+                    style={styles.segmentedButtons}
+                  />
                 </View>
-              ) : (
-                <Text variant="bodyMedium" style={styles.loadingText}>
-                  {loading ? 'Loading stats...' : 'No data available'}
-                </Text>
-              )
+
+                {wakatimeData ? (
+                  <View style={{width: '100%', alignItems: 'center', gap: 8, paddingVertical: 16}}>
+                    <Text variant="bodyLarge" style={{
+                      width: '100%',
+                      fontSize: 35,
+                      fontWeight: 'bold',
+                    }}>{wakatimeData.todayHours}</Text>
+                    <Text variant="bodyMedium" style={styles.statLabel}>
+                      {wakatimeData.totalDurations} coding sessions
+                    </Text>
+                  </View>
+                ) : (
+                  <Text variant="bodyMedium" style={styles.loadingText}>
+                    {wakatimeLoading ? 'Loading stats...' : 'No data available'}
+                  </Text>
+                )}
+              </>
             ) : (
               <Text variant="bodyMedium" style={styles.noApiText}>
                 Add your Wakatime API key in settings to see stats
@@ -208,17 +241,17 @@ export function Overview() {
             </View>
             
             {githubApiKey ? (
-              githubActivity ? (
+              githubData ? (
                 <View style={styles.statsContainer}>
                   <View style={styles.statRow}>
                     <Text variant="bodyMedium" style={styles.statLabel}>Total Repos:</Text>
-                    <Text variant="bodyMedium" style={styles.statValue}>{githubActivity.totalRepos}</Text>
+                    <Text variant="bodyMedium" style={styles.statValue}>{githubData.totalRepos}</Text>
                   </View>
                   
                   <Text variant="bodyMedium" style={[styles.statLabel, { marginTop: 12, marginBottom: 8 }]}>
                     Recent Repositories:
                   </Text>
-                  {githubActivity.recentRepos.map((repo, index) => (
+                  {githubData.recentRepos.map((repo: any, index: number) => (
                     <View key={index} style={styles.repoItem}>
                       <View style={styles.repoInfo}>
                         <Text variant="bodyMedium" style={styles.repoName}>{repo.name}</Text>
@@ -234,7 +267,7 @@ export function Overview() {
                 </View>
               ) : (
                 <Text variant="bodyMedium" style={styles.loadingText}>
-                  {loading ? 'Loading activity...' : 'No data available'}
+                  {githubLoading ? 'Loading activity...' : 'No data available'}
                 </Text>
               )
             ) : (
@@ -274,23 +307,29 @@ export function Overview() {
               </Text>
             </View>
             
-            {spotifyTracks ? (
-              <View style={styles.statsContainer}>
-                {spotifyTracks.tracks.map((track, index) => (
-                  <View key={index} style={styles.trackItem}>
-                    <View style={styles.trackInfo}>
-                      <Text variant="bodyMedium" style={styles.trackName}>{track.name}</Text>
-                      <Text variant="bodySmall" style={styles.trackArtist}>
-                        {track.artist} • {track.album}
-                      </Text>
+            {spotifyAccessToken ? (
+              spotifyData ? (
+                <View style={styles.statsContainer}>
+                  {spotifyData.tracks.map((track: any, index: number) => (
+                    <View key={index} style={styles.trackItem}>
+                      <View style={styles.trackInfo}>
+                        <Text variant="bodyMedium" style={styles.trackName}>{track.name}</Text>
+                        <Text variant="bodySmall" style={styles.trackArtist}>
+                          {track.artist} • {track.album}
+                        </Text>
+                      </View>
+                      <MaterialCommunityIcons name="music-note" size={20} color={colors.onSurfaceVariant} />
                     </View>
-                    <MaterialCommunityIcons name="music-note" size={20} color={colors.onSurfaceVariant} />
-                  </View>
-                ))}
-              </View>
+                  ))}
+                </View>
+              ) : (
+                <Text variant="bodyMedium" style={styles.loadingText}>
+                  {spotifyLoading ? 'Loading tracks...' : 'No recent tracks found'}
+                </Text>
+              )
             ) : (
-              <Text variant="bodyMedium" style={styles.loadingText}>
-                {loading ? 'Loading tracks...' : spotifyAccessToken ? 'No recent tracks found' : 'Add your Spotify access token in settings to see tracks'}
+              <Text variant="bodyMedium" style={styles.noApiText}>
+                Add your Spotify access token in settings to see tracks
               </Text>
             )}
           </Card.Content>
@@ -410,5 +449,11 @@ const styles = StyleSheet.create({
   },
   bottomPadding: {
     height: 24,
+  },
+  dateSelector: {
+    marginBottom: 16,
+  },
+  segmentedButtons: {
+    width: '100%',
   },
 });
