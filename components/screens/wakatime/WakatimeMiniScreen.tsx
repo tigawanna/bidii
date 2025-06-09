@@ -140,8 +140,9 @@ export function WakatimeMiniScreen() {
 
 const styles = StyleSheet.create({
   card: {
-    marginHorizontal: 16,
-    marginBottom: 16,
+    marginHorizontal: 2,
+    marginBottom: 2,
+    paddingVertical:12
   },
   dateSelector: {
     width: "100%",
@@ -151,7 +152,7 @@ const styles = StyleSheet.create({
     width: "100%", 
     alignItems: "center", 
     gap: 8, 
-    paddingVertical: 16
+    paddingVertical: 2
   },
   hoursValue: {
     width: "100%",
