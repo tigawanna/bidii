@@ -41,7 +41,23 @@
         {
           "launchMode": "most-recent"
         }
+      ],
+      [
+        "@bittingz/expo-widgets",
+        {
+          "android": {
+            "src": "./widgets/android",
+            "widgets": [
+              {
+                "name": "MyWidgetProvider",
+                "resourceName": "@xml/my_widget_info"
+              }
+            ],
+            "distPlaceholder": "optional.placeholder"
+          }
+        }
       ]
+
     ],
     "experiments": {
       "typedRoutes": true

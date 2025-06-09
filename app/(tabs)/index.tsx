@@ -1,11 +1,13 @@
 
 import { Overview } from "@/components/screens/home/Overview";
+import { TestSendMessage } from "@/widgets/TestSendMessage";
 import { StyleSheet } from "react-native";
 import { Surface } from "react-native-paper";
 
 export default function HomeScreen() {
   return (
     <Surface style={styles.container}>
+      <TestSendMessage/>
       <Overview />
     </Surface>
   );

@@ -12,10 +12,10 @@ import { PaperProvider } from "react-native-paper";
 import { focusManager, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppStateStatus, Platform } from "react-native";
 import { useOnlineManager, useAppState } from "@/lib/tanstack/hooks";
-import { SafeAreaView } from "react-native-safe-area-context";
+
 import { getWakatimeCurrrentUser } from "@/utils/api/wakatime";
 import { GlobalSnackbar } from "@/components/shared/snackbar/GlobalSnackbar";
-
+import * as ExpoWidgetsModule from "@bittingz/expo-widgets";
 const queryClient = new QueryClient();
 function onAppStateChange(status: AppStateStatus) {
   // React Query already supports in web browser refetch on window focus by default
