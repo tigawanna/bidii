@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Card, Chip, SegmentedButtons, Surface, Text, useTheme } from 'react-native-paper';
+import { WakatimeMiniScreen } from '../wakatime/WakatimeMiniScreen';
 
 type WakatimeStats = {
   todayHours: string;
@@ -48,37 +49,6 @@ export function Overview() {
   const lastFiveDays = getLastFiveDays();
 
   // Wakatime query using the correct durations endpoint
-  const {
-    data: wakatimeData,
-    isLoading: wakatimeLoading,
-    refetch: refetchWakatime,
-  } = useQuery({
-    queryKey: ['wakatime-durations', selectedDate, wakatimeApiKey],
-    queryFn: async () => {
-      if (!wakatimeApiKey) return null;
-      const sdk = new WakatimeSDK(wakatimeApiKey);
-      const result = await sdk.getUserDurations({ date: selectedDate });
-      
-      if (result.data) {
-        // Calculate total duration from durations array
-        const totalSeconds = result.data.reduce((total: number, duration: any) => {
-          return total + (duration.duration || 0);
-        }, 0);
-        
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        
-        return {
-          todayHours: `${hours}h ${minutes}m`,
-          totalDurations: result.data.length,
-          currentProject: result.data[0]?.project || 'No project',
-          topLanguage: result.data[0]?.language || 'No language'
-        };
-      }
-      return null;
-    },
-    enabled: !!wakatimeApiKey,
-  });
 
   // GitHub query
   const {
@@ -132,11 +102,10 @@ export function Overview() {
     enabled: !!spotifyAccessToken,
   });
 
-  const isLoading = wakatimeLoading || githubLoading || spotifyLoading;
+  const isLoading =  githubLoading || spotifyLoading;
 
   const onRefresh = async () => {
     await Promise.all([
-      refetchWakatime(),
       refetchGithub(),
       refetchSpotify(),
     ]);
@@ -162,73 +131,7 @@ export function Overview() {
         }
       >
         {/* Wakatime Section */}
-        <Card style={styles.card}>
-          <Card.Content>
-            <View style={styles.cardHeader}>
-              <MaterialCommunityIcons name="clock-outline" size={24} color={colors.primary} />
-              <Text variant="titleMedium" style={styles.cardTitle}>
-                Wakatime Stats
-              </Text>
-            </View>
-            
-            {wakatimeApiKey ? (
-              <>
-                {/* Date Selector */}
-                <View style={styles.dateSelector}>
-                  <SegmentedButtons
-                    value={selectedDate}
-                    onValueChange={setSelectedDate}
-                    buttons={lastFiveDays.map(day => ({
-                      value: day.value,
-                      label: day.label,
-                    }))}
-                    style={styles.segmentedButtons}
-                  />
-                </View>
-
-                {wakatimeData ? (
-                  <View style={{width: '100%', alignItems: 'center', gap: 8, paddingVertical: 16}}>
-                    <Text variant="bodyLarge" style={{
-                      width: '100%',
-                      fontSize: 35,
-                      fontWeight: 'bold',
-                    }}>{wakatimeData.todayHours}</Text>
-                    <Text variant="bodyMedium" style={styles.statLabel}>
-                      {wakatimeData.totalDurations} coding sessions
-                    </Text>
-                  </View>
-                ) : (
-                  <Text variant="bodyMedium" style={styles.loadingText}>
-                    {wakatimeLoading ? 'Loading stats...' : 'No data available'}
-                  </Text>
-                )}
-              </>
-            ) : (
-              <Text variant="bodyMedium" style={styles.noApiText}>
-                Add your Wakatime API key in settings to see stats
-              </Text>
-            )}
-          </Card.Content>
-          <Card.Actions>
-            {wakatimeApiKey ? (
-              <Button 
-                mode="text" 
-                onPress={() => router.push('/wakatime')}
-                icon="arrow-right"
-              >
-                View Details
-              </Button>
-            ) : (
-              <Button 
-                mode="contained-tonal" 
-                onPress={() => router.push('/api-keys')}
-                icon="key"
-              >
-                Add API Key
-              </Button>
-            )}
-          </Card.Actions>
-        </Card>
+        <WakatimeMiniScreen />
 
         {/* GitHub Section */}
         <Card style={styles.card}>

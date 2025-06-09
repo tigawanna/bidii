@@ -1,3 +1,7 @@
+import { settings$ } from "@/stores/use-app-settings";
+import { computed } from "@legendapp/state";
+import { use$ } from "@legendapp/state/react";
+
 export class WakatimeSDK {
   private apiKey: string;
   private baseUrl: string;
@@ -93,6 +97,17 @@ export class WakatimeSDK {
   async getUserLanguagesStats(params: { start?: string; end?: string }) {
     return this.fetchData("/api/v1/users/current/languages/stats", params);
   }
+}
+
+
+export const wakatimeSDK$ = computed(() => {
+  const apiKey = settings$.wakatimeApiKey.get();
+  return apiKey ? new WakatimeSDK(apiKey) : null;
+});
+
+export function useWakatimeSDK() {
+  const sdk = use$(() => wakatimeSDK$.get());
+  return sdk;
 }
 
 
