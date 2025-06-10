@@ -9,7 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tigawana.bidii"
     },
     "android": {
       "softwareKeyboardLayoutMode": "pan",
@@ -57,7 +58,6 @@
           }
         }
       ]
-
     ],
     "experiments": {
       "typedRoutes": true
